@@ -89,6 +89,8 @@ static command step[] = {
 {NOTHING,       1},
 {L_RIGHT,       3},
 {NOTHING,       1},
+{L_RIGHT,       3},
+{NOTHING,       1},
 {A,             5},
 {NOTHING,      55},
 {A,             5},
@@ -106,7 +108,6 @@ static command step[] = {
 {L_LEFT,        3},
 {A,             5},
 {NOTHING,     100}
-
 
 //{L_DOWN,        6},
 //{L_LEFT,       76},
@@ -356,7 +357,7 @@ int report_count = 0;
 int xpos = 0;
 int ypos = 0;
 int bufindex = 0;
-int cleanup_index = 25;
+int cleanup_index = 27;
 int duration_count = 0;
 int portsval = 0;
 int count_iter = 0;
