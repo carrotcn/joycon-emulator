@@ -364,6 +364,7 @@ int count_iter = 0;
 uint8_t c;
 char arrCOMInput[64] = {};
 
+// ProcessButtonEvent sets the corresponding button status in ReportData
 void ProcessButtonEvent(USB_JoystickReport_Input_t* const ReportData)
 {
 	switch (step[bufindex].button)
@@ -597,14 +598,26 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 			//PORTB = portsval;
 			//_delay_ms(250);
 			#endif
+			// ^= XOR: 1 if bit values are different. 
+			// 0x40 = (1<<6) = 0b01000000 = 6th bit 
+			// (starting from the least significant bit (LSB) = 0th bit, 
+			// AKA right-most bit).
+			// Purpose here is to flip the on-board LED on PD6 (refer to Pinout card)
+			// The pins are named with a letter and number. Pins are grouped into 
+			// 8 bit ports represented by the letter, and the number represents the 
+			// individual bit within the port. B4 is bit 4 in port B, for example.
 			PORTD ^= 0x40;
 			if (duration_count == 0){
 				while (1) {
 					//uart_print("LOOP");
+					
+					// Syntax of input from serial port:
+					// ![button][,button...]@[duration]#
 					if (uart_available()) {
 						PORTD ^= 0x40;
 						c = uart_getchar();
 						uart_putchar(c);
+						// '!' is the beginning character of an event
 						if (c == '!') {
 							memset(arrCOMInput,0,64*sizeof(char));
 							int iCount = 0;
@@ -612,7 +625,10 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 							{
 								c = uart_getchar();
 								uart_putchar(c);
+								// '@' delimits button number and event duration
 								if (c == '@') break;
+								// ',' is used to separate the button numbers in case
+								// multiple buttons need to be pressed at the same time
 								if (c == ',')
 								{
 									arrCOMInput[iCount] = '\0';
@@ -657,12 +673,16 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 			else {
 				duration_count++;
 				if (duration_count > step[bufindex].duration) {
-					step[bufindex].button = 15;					
+					// Release all buttons and joystick,
+					// and reset the duration count so it goes back
+					// to the loop of receiving serial port input
+					step[bufindex].button = 15; //15 = NOTHING
 					duration_count = 0;
 					ProcessButtonEvent(ReportData);					
 				}
 				else
 				{
+					// Duration not reached. Carry on with the last event
 					memcpy(ReportData, &last_report, sizeof(USB_JoystickReport_Input_t));
 				}
 				
