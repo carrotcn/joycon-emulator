@@ -102,12 +102,14 @@ static command step[] = {
 {B,             5},
 {NOTHING,      55},
 {L_UP,          3},
-{NOTHING,       1},
+{NOTHING,       5},
 {L_LEFT,        3},
-{NOTHING,       1},
+{NOTHING,       5},
 {L_LEFT,        3},
+{NOTHING,       5},
 {A,             5},
 {NOTHING,     100}
+
 
 //{L_DOWN,        6},
 //{L_LEFT,       76},
@@ -357,7 +359,7 @@ int report_count = 0;
 int xpos = 0;
 int ypos = 0;
 int bufindex = 0;
-int cleanup_index = 27;
+int cleanup_index = 28;
 int duration_count = 0;
 int portsval = 0;
 int count_iter = 0;
@@ -533,7 +535,7 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 			
 			if (bufindex == cleanup_index) //reached the bottom of main action loop
 			{
-				bufindex = 25; //27+25
+				bufindex = 28; //27+25
 				duration_count = 0;
 
 				state = BREATHE;
